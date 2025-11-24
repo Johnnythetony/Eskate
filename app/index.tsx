@@ -1,10 +1,11 @@
 import FormInput from "@/components/FormInput";
 import "@/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import Button from "../components/Button";
 
 
 const Login = () => {
@@ -12,6 +13,7 @@ const Login = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: "",
+      password: "",
   }});
 
   const onSubmit = async (formData: { email: string, password: string; }) => {signInWithEmailAndPassword(auth, formData.email, formData.password)
@@ -47,6 +49,8 @@ const Login = () => {
         placeholder="Enter your password"
         secureTextEntry
       />
+      <Link href='/register' style={styles.link}><Text style={styles.linktext}>Dont have an account? Register here</Text></Link>
+      <Button text="Login" onPress={handleSubmit(onSubmit)} />
     </View>
   );
 }
@@ -68,7 +72,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-  }  
+  },
+  link: {
+    marginTop: 10,
+  },
+  linktext: {
+    color: "blue,"
+  },  
 })
 
 export default Login;
