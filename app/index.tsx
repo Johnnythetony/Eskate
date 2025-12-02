@@ -22,6 +22,8 @@ const Login = () => {
         const { email } = userCredential.user;
         if (email) {
           await AsyncStorage.setItem("userEmail", email);
+
+          //ToDo arreglar rutas
           router.push("/");
         }
       })
