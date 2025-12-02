@@ -4,18 +4,57 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { collection, doc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore';
 import { useForm } from "react-hook-form";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { z } from "zod";
 
+const isAdult = (dateOfBirth: Date): boolean => {
+    const today = new Date();
+    const eighteenYearsAgo = new Date(
+        today.getFullYear() - 18,
+        today.getMonth(),
+        today.getDate()
+    );
+
+    return dateOfBirth <= eighteenYearsAgo;
+};
+
 const formSchema = z.object({
-  username: z.string().refine(),
-  name: z.string(),
-  surname: z.string(),
-  birthdate: z.string(),
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Password must be at least 6 characters")
+  username: z.string()
+    .min(3, "Mínimo 3 caracteres")
+    .refine(async (value) => {
+        const db = getFirestore(); 
+  
+        const usersRef = collection(db, "users");
+  
+        const q = query(usersRef, where("username", "==", value));
+  
+        const querySnapshot = await getDocs(q);
+  
+        return !querySnapshot.empty;
+    }, {
+        message: "Ese nombre de usuario ya está en uso.",
+    }),
+  name: z.string().min(3),
+  surname: z.string().min(3),
+  birthdate: z.string().transform((str, ctx) => {
+        const date = new Date(str);
+        
+        if (isNaN(date.getTime())) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Formato de fecha inválido o vacío."
+            });
+            return z.NEVER;
+        }
+        return date;
+    }).refine(isAdult, {
+      message: "Debes ser mayor de 18 años para registrarte."
+    }),
+  email: z.string().email("Email no válido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  confirmPassword: z.string().min(6, "La contraseña debe tener al menos 6 caracteres")
 });
 
 const RegisterScreen = () => {
@@ -35,12 +74,27 @@ const RegisterScreen = () => {
     reValidateMode: "onBlur",
   });
 
-  const onSubmit = async (formData: { username: string, name: string, surname: string, birthdate: string, email: string, password: string;  confirmPassword: string}) => {
+  const onSubmit = async (formData: { username: string, name: string, surname: string, birthdate: Date, email: string, password: string;  confirmPassword: string}) => {
     if (formData.password !== formData.confirmPassword){
         Alert.alert("Password doesnt match");
     }
     createUserWithEmailAndPassword(auth, formData.email, formData.password)
       .then(async (userCredential) => {
+
+        const uid = userCredential.user.uid;
+
+        const userProfile = {
+            username: formData.username,
+            name: formData.name,
+            surname: formData.surname,
+            dateOfBirth: formData.birthdate,
+            createdAt: new Date(),
+        };
+
+        const db = getFirestore();
+
+        await setDoc(doc(db, "users", uid), userProfile);
+
         const { email } = userCredential.user;
         if (email) {
           await AsyncStorage.setItem("userEmail", email);
