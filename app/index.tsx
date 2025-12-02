@@ -4,7 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useForm } from "react-hook-form";
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../components/Button";
 
 
@@ -30,7 +31,7 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={require('../assets/app_logo.png')} style={styles.logo}/>
       <Text style={styles.title}>Eskate</Text>
       <FormInput
@@ -51,7 +52,7 @@ const Login = () => {
       />
       <Link href='/register' style={styles.link}><Text style={styles.linktext}>Dont have an account? Register here</Text></Link>
       <Button text="Login" onPress={handleSubmit(onSubmit)} />
-    </View>
+    </SafeAreaView>
   );
 }
 
