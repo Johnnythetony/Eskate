@@ -33,7 +33,7 @@ const ProfileHeaderButton = ({ username, email }: { username: string; email: str
             </Pressable>
 
             {isModalVisible && (
-                <View style={{ position: 'absolute', top: 0, left: 0, padding: 15, backgroundColor: 'white', zIndex: 100, elevation: 5 }}>
+                <View style={styles.modalview}>
                     <Text style={{ fontWeight: 'bold' }}>{username}</Text>
                     <Text>{email}</Text>
                     <Button title="Cerrar Sesión" onPress={handleLogout} />
@@ -48,6 +48,20 @@ const styles = StyleSheet.create({
     safearea: {
         flex: 1,
     },
+    modalview: {
+        position: 'absolute',
+        top: 0, 
+        left: 0, 
+        padding: 15, 
+        backgroundColor: 'white', 
+        zIndex: 100, 
+        elevation: 5
+    },
+    pressable: {
+        padding: 8, 
+        backgroundColor: '#ffffffff', 
+        borderRadius: 5 
+    }
 })
 
 export default function AppStackLayout() {
