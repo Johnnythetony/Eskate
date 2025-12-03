@@ -1,12 +1,11 @@
 import Button from "@/components/Button";
 import FormInput from "@/components/FormInput";
 import { zodResolver } from "@hookform/resolvers/zod";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { collection, doc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore';
 import { useForm } from "react-hook-form";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from "react-native";
 import { z } from "zod";
 
 const isAdult = (dateOfBirth: Date): boolean => {
@@ -32,7 +31,7 @@ const formSchema = z.object({
   
         const querySnapshot = await getDocs(q);
   
-        return !querySnapshot.empty;
+        return querySnapshot.empty;
     }, {
         message: "Ese nombre de usuario ya está en uso.",
     }),
@@ -76,66 +75,88 @@ const RegisterScreen = () => {
 
   const onSubmit = async (formData: { username: string, name: string, surname: string, birthdate: Date, email: string, password: string;  confirmPassword: string}) => {
     if (formData.password !== formData.confirmPassword){
-        Alert.alert("Password doesnt match");
+        Alert.alert("Las contraseñas no coinciden");
     }
-    createUserWithEmailAndPassword(auth, formData.email, formData.password)
-      .then(async (userCredential) => {
 
-        const uid = userCredential.user.uid;
+    try
+    {
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-        const userProfile = {
-            username: formData.username,
-            name: formData.name,
-            surname: formData.surname,
-            dateOfBirth: formData.birthdate,
-            createdAt: new Date(),
-        };
+      const uid = userCredential.user.uid;
 
-        const db = getFirestore();
+      const userProfile = {
+          username: formData.username,
+          name: formData.name,
+          surname: formData.surname,
+          dateOfBirth: formData.birthdate,
+          createdAt: new Date(),
+      };
 
-        await setDoc(doc(db, "users", uid), userProfile);
+      const db = getFirestore();
 
-        const { email } = userCredential.user;
-        if (email) {
-          await AsyncStorage.setItem("userEmail", email);
-          router.push("/");
-        }
-      })
-      .catch(() => {
-        Alert.alert("Error creating account");
-      });
+      await setDoc(doc(db, "users", uid), userProfile);
+
+      Alert.alert(
+        "Registro exitoso",
+        "Tu cuenta ha sido creada correctamente. Pulsa OK para acceder",
+        [
+          {
+            text: "OK",
+            onPress: () => router.push("/"),
+          },
+        ]
+      );
+    }
+    catch(err: any)
+    {
+      console.error("Error al crear usuario");
+
+      Alert.alert(
+        "Datos no válidos",
+        "Revise los campos antes de volver a intentar crear una cuenta",
+        [
+          {
+            text: "OK",
+            onPress: () => {},
+          },
+        ]
+      );
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
+    <KeyboardAvoidingView 
+      style={{flex: 1}}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Crear cuenta</Text>
       <FormInput
         control={control}
         name="username"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Enter your username"
+        placeholder="Nombre de usuario"
       />
       <FormInput
         control={control}
         name="name"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Enter your name"
+        placeholder="Nombre"
       />
       <FormInput
         control={control}
         name="surname"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Enter your surname"
+        placeholder="Apellidos"
       />
       <FormInput
         control={control}
         name="birthdate"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Enter your "
+        placeholder="Fecha de nacimiento"
       />
       <FormInput
         control={control}
@@ -143,14 +164,14 @@ const RegisterScreen = () => {
         autoCapitalize="none"
         autoCompleteType="email"
         inputMode="email"
-        placeholder="Enter your email address"
+        placeholder="Correo electrónico"
       />
       <FormInput
         control={control}
         name="password"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Enter your password"
+        placeholder="Contraseña"
         secureTextEntry
       />
       <FormInput
@@ -158,12 +179,13 @@ const RegisterScreen = () => {
         name="confirmPassword"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Repeat your password"
+        placeholder="Repetir contraseña"
         secureTextEntry
       />
-      <Link href="/" style={styles.link}><Text style={styles.linktext}>Already have an account? Login here</Text></Link>
-      <Button text="Register" onPress={handleSubmit(onSubmit)} />
-    </View>
+      <Link href="/" style={styles.link}><Text style={styles.linktext}>Ya tienes cuenta? Inicia sesión aquí!</Text></Link>
+      <Button text="Registrarse" onPress={handleSubmit(onSubmit)} />
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -172,8 +194,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    gap: 20,
+    padding: 10,
+    gap: 10,
   },
   title: {
     fontSize: 20,

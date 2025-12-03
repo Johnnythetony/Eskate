@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useForm } from "react-hook-form";
-import { Alert, Image, StyleSheet, Text } from "react-native";
+import { Alert, Image, KeyboardAvoidingView, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../components/Button";
 
@@ -24,15 +24,16 @@ const Login = () => {
           await AsyncStorage.setItem("userEmail", email);
 
           //ToDo arreglar rutas
-          router.push("/");
+          router.push("/tabs/shop");
         }
       })
       .catch(() => {
-        Alert.alert("Invalid credentials");
+        Alert.alert("Credenciales no válidas");
       });
   };
 
   return (
+    <KeyboardAvoidingView style = {{flex: 1}}>
     <SafeAreaView style={styles.container}>
       <Image source={require('../assets/app_logo.png')} style={styles.logo}/>
       <Text style={styles.title}>Eskate</Text>
@@ -42,19 +43,20 @@ const Login = () => {
         autoCapitalize="none"
         autoCompleteType="email"
         inputMode="email"
-        placeholder="Enter your email address"
+        placeholder="Correo electrónico"
       />
       <FormInput
         control={control}
         name="password"
         autoCapitalize="none"
         inputMode="text"
-        placeholder="Enter your password"
+        placeholder="Contraseña"
         secureTextEntry
       />
-      <Link href='/register' style={styles.link}><Text style={styles.linktext}>Dont have an account? Register here</Text></Link>
-      <Button text="Login" onPress={handleSubmit(onSubmit)} />
+      <Link href='/register' style={styles.link}><Text style={styles.linktext}>No tienes cuenta? Regístrate aquí!</Text></Link>
+      <Button text="Iniciar sesión" onPress={handleSubmit(onSubmit)} />
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
