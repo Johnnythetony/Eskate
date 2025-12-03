@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 type FormInputProps = {
@@ -15,7 +15,7 @@ const FormInputText: React.FC<FormInputProps> = ({ control, name, ...otherProps 
       control={control}
       name={name}
       render={({ field: { value, onChange, onBlur }, fieldState: { error } }) => (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}>
           <TextInput
             style={styles.input}
             value={value}
@@ -27,7 +27,7 @@ const FormInputText: React.FC<FormInputProps> = ({ control, name, ...otherProps 
             {error.message}
           </Text>
           }
-        </View>
+        </KeyboardAvoidingView>
       )}
     />
   );
@@ -54,7 +54,7 @@ const FormInputDate = <T extends FieldValues>({ control, name, label, mode = "da
             control={control}
             name={name}
             render={({ field: { value, onChange, onBlur }, fieldState: { error } }) => (
-                <View style={styles.container}>
+                <KeyboardAvoidingView style={styles.container}>
                     {/* Botón de Activación (Necesario ya que el Picker es Modal) */}
                     <Text style={styles.label}>{label}</Text>
                     <Button 
@@ -83,7 +83,7 @@ const FormInputDate = <T extends FieldValues>({ control, name, label, mode = "da
                     {error && <Text style={styles.errorMessage}>
                         {error.message}
                     </Text>}
-                </View>
+                </KeyboardAvoidingView>
             )}
         />
     );

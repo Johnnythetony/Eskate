@@ -38,20 +38,6 @@ const formSchema = z.object({
     }),
   name: z.string().min(3, "Mínimo 3 caracteres"),
   surname: z.string().min(3, "Mínimo 3 caracteres"),
-  /*birthdate: z.string().transform((str, ctx) => {
-        const date = new Date(str);
-        
-        if (isNaN(date.getTime())) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Formato de fecha inválido o vacío."
-            });
-            return z.NEVER;
-        }
-        return date;
-    }).refine(isAdult, {
-      message: "Debes ser mayor de 18 años para registrarte."
-    }),*/
   birthdate: z.date()
   .refine(isAdult, {
         message: "Debes ser mayor de 18 años para registrarte."
@@ -160,8 +146,7 @@ const RegisterScreen = () => {
         control={control}
         name="birthdate"
         label="Fecha de Nacimiento"
-        mode="date" // Especifica que solo quieres seleccionar la fecha
-        // Añadiría la fecha máxima para validar la mayoría de edad en la UI (opcional)
+        mode="date" 
         maximumDate={new Date()} 
       />
       <FormInputText
