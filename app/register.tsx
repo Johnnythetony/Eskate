@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import FormInput from "@/components/FormInput";
+import { FormInputDate, FormInputText } from "@/components/FormInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from "react-native";
 import { z } from "zod";
 
+/*Este método comprueba si la edad es 18 o más a través de la fecha de nacimiento introducida*/
 const isAdult = (dateOfBirth: Date): boolean => {
     const today = new Date();
     const eighteenYearsAgo = new Date(
@@ -35,9 +36,9 @@ const formSchema = z.object({
     }, {
         message: "Ese nombre de usuario ya está en uso.",
     }),
-  name: z.string().min(3),
-  surname: z.string().min(3),
-  birthdate: z.string().transform((str, ctx) => {
+  name: z.string().min(3, "Mínimo 3 caracteres"),
+  surname: z.string().min(3, "Mínimo 3 caracteres"),
+  /*birthdate: z.string().transform((str, ctx) => {
         const date = new Date(str);
         
         if (isNaN(date.getTime())) {
@@ -50,7 +51,11 @@ const formSchema = z.object({
         return date;
     }).refine(isAdult, {
       message: "Debes ser mayor de 18 años para registrarte."
-    }),
+    }),*/
+  birthdate: z.date()
+  .refine(isAdult, {
+        message: "Debes ser mayor de 18 años para registrarte."
+    }),  
   email: z.string().email("Email no válido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   confirmPassword: z.string().min(6, "La contraseña debe tener al menos 6 caracteres")
@@ -63,7 +68,7 @@ const RegisterScreen = () => {
       username: "",
       name: "",
       surname: "",
-      birthdate: "",
+      birthdate: new Date(),
       email: "",
       password: "",
       confirmPassword: ""
@@ -112,8 +117,8 @@ const RegisterScreen = () => {
       console.error("Error al crear usuario");
 
       Alert.alert(
-        "Datos no válidos",
-        "Revise los campos antes de volver a intentar crear una cuenta",
+        "Error",
+        "Ha ocurrido un error al intentar crear la cuenta",
         [
           {
             text: "OK",
@@ -130,35 +135,36 @@ const RegisterScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}>
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear cuenta</Text>
-      <FormInput
+      <FormInputText
         control={control}
         name="username"
         autoCapitalize="none"
         inputMode="text"
         placeholder="Nombre de usuario"
       />
-      <FormInput
+      <FormInputText
         control={control}
         name="name"
         autoCapitalize="none"
         inputMode="text"
         placeholder="Nombre"
       />
-      <FormInput
+      <FormInputText
         control={control}
         name="surname"
         autoCapitalize="none"
         inputMode="text"
         placeholder="Apellidos"
       />
-      <FormInput
+      <FormInputDate
         control={control}
         name="birthdate"
-        autoCapitalize="none"
-        inputMode="text"
-        placeholder="Fecha de nacimiento"
+        label="Fecha de Nacimiento"
+        mode="date" // Especifica que solo quieres seleccionar la fecha
+        // Añadiría la fecha máxima para validar la mayoría de edad en la UI (opcional)
+        maximumDate={new Date()} 
       />
-      <FormInput
+      <FormInputText
         control={control}
         name="email"
         autoCapitalize="none"
@@ -166,7 +172,7 @@ const RegisterScreen = () => {
         inputMode="email"
         placeholder="Correo electrónico"
       />
-      <FormInput
+      <FormInputText
         control={control}
         name="password"
         autoCapitalize="none"
@@ -174,7 +180,7 @@ const RegisterScreen = () => {
         placeholder="Contraseña"
         secureTextEntry
       />
-      <FormInput
+      <FormInputText
         control={control}
         name="confirmPassword"
         autoCapitalize="none"

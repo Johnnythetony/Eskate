@@ -1,4 +1,4 @@
-import FormInput from "@/components/FormInput";
+import { FormInputText } from "@/components/FormInput";
 import "@/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
@@ -37,7 +37,7 @@ const Login = () => {
     <SafeAreaView style={styles.container}>
       <Image source={require('../assets/app_logo.png')} style={styles.logo}/>
       <Text style={styles.title}>Eskate</Text>
-      <FormInput
+      <FormInputText
         control={control}
         name="email"
         autoCapitalize="none"
@@ -45,7 +45,7 @@ const Login = () => {
         inputMode="email"
         placeholder="Correo electrónico"
       />
-      <FormInput
+      <FormInputText
         control={control}
         name="password"
         autoCapitalize="none"
