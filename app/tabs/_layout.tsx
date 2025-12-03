@@ -1,9 +1,10 @@
+import styles from '@/Stylesheet';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, router } from 'expo-router';
 import { signOut as firebaseSignOut } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchBar } from 'react-native-screens';
 import CustomHeader from '../../components/Header';
@@ -27,14 +28,14 @@ const ProfileHeaderButton = ({ username, email }: { username: string; email: str
     return (
         <>
             <Pressable onPress={() => setModalVisible(true)}>
-                <View style={{ padding: 8, backgroundColor: '#000000ff', borderRadius: 5 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{username}</Text>
+                <View style={styles.modalViewProfile}>
+                    <Text>{username}</Text>
                 </View>
             </Pressable>
 
             {isModalVisible && (
-                <View style={styles.modalview}>
-                    <Text style={{ fontWeight: 'bold' }}>{username}</Text>
+                <View style={styles.modalViewProfile}>
+                    <Text>{username}</Text>
                     <Text>{email}</Text>
                     <Button title="Cerrar Sesión" onPress={handleLogout} />
                     <Button title="Cerrar" onPress={() => setModalVisible(false)} />
@@ -43,26 +44,6 @@ const ProfileHeaderButton = ({ username, email }: { username: string; email: str
         </>
     );
 };
-
-const styles = StyleSheet.create({
-    safearea: {
-        flex: 1,
-    },
-    modalview: {
-        position: 'absolute',
-        top: 0, 
-        left: 0, 
-        padding: 15, 
-        backgroundColor: 'white', 
-        zIndex: 100, 
-        elevation: 5
-    },
-    pressable: {
-        padding: 8, 
-        backgroundColor: '#ffffffff', 
-        borderRadius: 5 
-    }
-})
 
 export default function AppStackLayout() {
     const user = auth.currentUser;
@@ -99,7 +80,7 @@ export default function AppStackLayout() {
 
 
     return (
-        <SafeAreaView style={styles.safearea}>
+        <SafeAreaView style={styles.safeAreaBase}>
         <Stack
             screenOptions={{
                 headerShown: true,

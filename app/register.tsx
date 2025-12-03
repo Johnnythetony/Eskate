@@ -1,11 +1,12 @@
 import Button from "@/components/Button";
 import { FormInputDate, FormInputText } from "@/components/FormInput";
+import styles from "@/Stylesheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { collection, doc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore';
 import { useForm } from "react-hook-form";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
 import { z } from "zod";
 
 /*Este método comprueba si la edad es 18 o más a través de la fecha de nacimiento introducida*/
@@ -119,7 +120,7 @@ const RegisterScreen = () => {
     <KeyboardAvoidingView 
       style={{flex: 1}}
       behavior={Platform.OS === "ios" ? "padding" : "height"}>
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.containerAuthRegister}>
       <Text style={styles.title}>Crear cuenta</Text>
       <FormInputText
         control={control}
@@ -173,31 +174,11 @@ const RegisterScreen = () => {
         placeholder="Repetir contraseña"
         secureTextEntry
       />
-      <Link href="/" style={styles.link}><Text style={styles.linktext}>Ya tienes cuenta? Inicia sesión aquí!</Text></Link>
+      <Link href="/" style={styles.linkWrapper}><Text style={styles.linkText}>Ya tienes cuenta? Inicia sesión aquí!</Text></Link>
       <Button text="Registrarse" onPress={handleSubmit(onSubmit)} />
     </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    gap: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  link: {
-    marginTop: 10,
-  },
-  linktext: {
-    color: "blue,"
-  },
-});
 
 export default RegisterScreen;
