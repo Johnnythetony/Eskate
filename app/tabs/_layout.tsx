@@ -15,9 +15,19 @@ const ProfileHeaderButton = ({ username, email }: { username: string; email: str
 
     const handleLogout = async () => {
         try {
-            await firebaseSignOut(auth);
-            setModalVisible(false);
-            router.push('/'); 
+            Alert.alert(
+                "Está seguro?",
+                "Está seguro de que desea cerrar la sesión?",
+            [{
+                text: "Si",
+                onPress: async () => {
+                    await firebaseSignOut(auth);
+                    setModalVisible(false);
+                    router.push('/'); 
+                }
+            },{
+                text: "No"
+            }])
         } catch (error) {
             Alert.alert("Error", "No se pudo cerrar la sesión.");
         }
